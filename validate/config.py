@@ -4,7 +4,7 @@ import os
 import configparser
 import json
 
-def validate_config(dir):
+def validate_config_directoriescfg(dir):
     # Check if the config file exists
     if not os.path.exists(dir):
         return False, "Config file does not exist"
