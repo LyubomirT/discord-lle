@@ -111,28 +111,36 @@ async def on_message(message):
         # Check if DM logging is enabled
         if dm_config["enabled"]:
             # Check if the user has a directory
-            if not os.path.exists(log_dir + "/DMs/" + str(message.author)):
-                os.mkdir(log_dir + "/DMs/" + str(message.author))
+            if not os.path.exists(log_dir + "/DMs/" + message.author.name):
+                os.mkdir(log_dir + "/DMs/" + message.author.name)
             # Check if the user has a file
-            if not os.path.exists(log_dir + "/DMs/" + str(message.author) + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + ".txt"):
-                with open(log_dir + "/DMs/" + str(message.author) + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + ".txt", "w") as f:
-                    f.write("Author: " + str(message.author) + "\n")
-                    f.write("Content: " + str(message.content) + "\n")
-                    f.write("Attachments: " + str(message.attachments) + "\n")
-                    f.write("Created At: " + str(message.created_at) + "\n")
-                    f.write("Edited At: " + str(message.edited_at) + "\n")
-                    f.write("ID: " + str(message.id) + "\n")
-                    f.write("Jump URL: " + str(message.jump_url) + "\n")
-                    f.write("Reference: " + str(message.reference) + "\n")
-                    f.write("Type: " + str(message.type) + "\n")
-                    f.write("Webhook ID: " + str(message.webhook_id) + "\n")
-                    f.write("Mentions: " + str(message.mentions) + "\n")
-                    f.write("Mention Roles: " + str(message.mention_roles) + "\n")
-                    f.write("Pinned: " + str(message.pinned) + "\n")
-                    f.write("TTS: " + str(message.tts) + "\n")
-                    f.write("Flags: " + str(message.flags) + "\n")
-                    f.write("Activity: " + str(message.activity) + "\n")
-                    f.write("Application: " + str(message.application) + "\n")
+            if not os.path.exists(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + ".txt"):
+                # Create the file
+                with open(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + ".txt", "w") as f:
+                    # Write the message contents to the file
+                    f.write(message.content)
+                    # Check if the user wants to download images
+                    if dm_config["download_images"]:
+                        # Check if the message has an attachment
+                        if message.attachments:
+                            # Download the attachment
+                            await message.attachments[0].save(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + "_" + message.attachments[0].filename)
+                    # Check if the user wants to download videos
+                    if dm_config["download_videos"]:
+                        # Check if the message has an attachment
+                        if message.attachments:
+                            # Check if the attachment is a video
+                            if message.attachments[0].content_type == "video/mp4":
+                                # Download the attachment
+                                await message.attachments[0].save(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + "_" + message.attachments[0].filename)
+                    # Check if the user wants to download audio
+                    if dm_config["download_audio"]:
+                        # Check if the message has an attachment
+                        if message.attachments:
+                            # Check if the attachment is an audio file
+                            if message.attachments[0].content_type == "audio/mpeg":
+                                # Download the attachment
+                                await message.attachments[0].save(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + "_" + message.attachments[0].filename)
 
 
 
