@@ -111,36 +111,52 @@ async def on_message(message):
         # Check if DM logging is enabled
         if dm_config["enabled"]:
             # Check if the user has a directory
-            if not os.path.exists(log_dir + "/DMs/" + message.author.name):
-                os.mkdir(log_dir + "/DMs/" + message.author.name)
-            # Check if the user has a file
-            if not os.path.exists(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + ".txt"):
+            user_dir = log_dir + "/DMs/" + message.author.name
+            if not os.path.exists(user_dir):
+                os.mkdir(user_dir)
+            
+            # Define the log file path
+            log_file_path = f"{user_dir}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{message.id}.txt"
+            
+            # Check if the message content is not empty
+            if message.content.strip():
                 # Create the file
-                with open(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + ".txt", "w") as f:
+                with open(log_file_path, "w") as f:
                     # Write the message contents to the file
-                    f.write(message.content)
-                    # Check if the user wants to download images
-                    if dm_config["download_images"]:
-                        # Check if the message has an attachment
-                        if message.attachments:
-                            # Download the attachment
-                            await message.attachments[0].save(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + "_" + message.attachments[0].filename)
-                    # Check if the user wants to download videos
-                    if dm_config["download_videos"]:
-                        # Check if the message has an attachment
-                        if message.attachments:
-                            # Check if the attachment is a video
-                            if message.attachments[0].content_type == "video/mp4":
-                                # Download the attachment
-                                await message.attachments[0].save(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + "_" + message.attachments[0].filename)
-                    # Check if the user wants to download audio
-                    if dm_config["download_audio"]:
-                        # Check if the message has an attachment
-                        if message.attachments:
-                            # Check if the attachment is an audio file
-                            if message.attachments[0].content_type == "audio/mpeg":
-                                # Download the attachment
-                                await message.attachments[0].save(log_dir + "/DMs/" + message.author.name + "/" + str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + "_" + str(message.id) + "_" + message.attachments[0].filename)
+                    f.write("[Message]\n" + message.content + "\n")
+            
+            # Check if the user wants to download images
+            if dm_config["download_images"] and message.attachments:
+                image_attachment = message.attachments[0]
+                # Check if the attachment is an image
+                if "image" in image_attachment.content_type:
+                    image_path = f"{user_dir}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{message.id}_{image_attachment.filename}"
+                    await image_attachment.save(image_path)
+                    # Update the log file with image information
+                    with open(log_file_path, "a") as f:
+                        f.write(f"[Image Attachment]\n{image_path}\n")
+            
+            # Check if the user wants to download videos
+            if dm_config["download_videos"] and message.attachments:
+                video_attachment = message.attachments[0]
+                # Check if the attachment is a video
+                if "video" in video_attachment.content_type:
+                    video_path = f"{user_dir}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{message.id}_{video_attachment.filename}"
+                    await video_attachment.save(video_path)
+                    # Update the log file with video information
+                    with open(log_file_path, "a") as f:
+                        f.write(f"[Video Attachment]\n{video_path}\n")
+            
+            # Check if the user wants to download audio
+            if dm_config["download_audio"] and message.attachments:
+                audio_attachment = message.attachments[0]
+                # Check if the attachment is an audio file
+                if "audio" in audio_attachment.content_type:
+                    audio_path = f"{user_dir}/{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{message.id}_{audio_attachment.filename}"
+                    await audio_attachment.save(audio_path)
+                    # Update the log file with audio information
+                    with open(log_file_path, "a") as f:
+                        f.write(f"[Audio Attachment]\n{audio_path}\n")
 
 
 
