@@ -2,3 +2,6 @@ discord-lle-env/
 .env
 __pycache__/
 logs/
+
+_config_/
+_config_backup
