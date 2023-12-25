@@ -199,9 +199,13 @@ Pull requests are welcome! If you want to contribute to this project, please fol
 7. Explain your changes and why they should be merged
 8. Wait for a response :D
 
+## Discord Server 📡
+
+If you have any questions, suggestions, or just want to hang out, feel free to join the official [Discord server](https://discord.gg/4nVVhh29E3) of the developer!
+
 ## License 📜
 
-This project is licensed under the [BSD 3-Clause License](LICENSE). Please abide by the terms of the license when using this project. Thank you!
+This project is licensed under the [BSD 3-Clause License](LICENSE). Please abide by the terms of the license when using this project. Thank you! ♥
 
 ## Acknowledgements 🙏
 
