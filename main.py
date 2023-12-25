@@ -40,32 +40,68 @@ ownerid = 0
 
 def load_config():
     with open("_config_/directories.cfg", "r") as f:
-        config = configparser.ConfigParser()
-        config.read_file(f)
+        try:
+            config = configparser.ConfigParser()
+            config.read_file(f)
+        except:
+            print(Colorizer("red").colorize("Could not load config! The directories.cfg file is missing or corrupt."))
+            os._exit(1)
         global log_dir
-        log_dir = config["directories"]["log_dir"]
+        try:
+            log_dir = config["directories"]["log_dir"]
+        except:
+            print(Colorizer("red").colorize("Could not load config! Please specify a proper log directory or use cfg_gen.py to generate a new config file."))
+            os._exit(1)
     with open("_config_/types.cfg", "r") as f:
-        config = configparser.ConfigParser()
-        config.read_file(f)
+        try:
+            config = configparser.ConfigParser()
+            config.read_file(f)
+        except:
+            print(Colorizer("red").colorize("Could not load config! The types.cfg file is missing or corrupt."))
+            os._exit(1)
         global dm_config
-        dm_config["enabled"] = bool(config["direct_messages"]["enabled"])
-        dm_config["download_images"] = bool(config["direct_messages"]["download_images"])
-        dm_config["download_videos"] = bool(config["direct_messages"]["download_videos"])
-        dm_config["download_audio"] = bool(config["direct_messages"]["download_audio"])
+        try:
+            dm_config["enabled"] = bool(config["direct_messages"]["enabled"])
+            dm_config["download_images"] = bool(config["direct_messages"]["download_images"])
+            dm_config["download_videos"] = bool(config["direct_messages"]["download_videos"])
+            dm_config["download_audio"] = bool(config["direct_messages"]["download_audio"])
+        except:
+            print(Colorizer("red").colorize("Could not load config! Please specify proper types (DM) or use cfg_gen.py to generate a new config file."))
+            os._exit(1)
         global server_config
-        server_config["enabled"] = bool(config["servers"]["enabled"])
-        server_config["download_images"] = bool(config["servers"]["download_images"])
-        server_config["download_videos"] = bool(config["servers"]["download_videos"])
-        server_config["download_audio"] = bool(config["servers"]["download_audio"])
+        try:
+            server_config["enabled"] = bool(config["servers"]["enabled"])
+            server_config["download_images"] = bool(config["servers"]["download_images"])
+            server_config["download_videos"] = bool(config["servers"]["download_videos"])
+            server_config["download_audio"] = bool(config["servers"]["download_audio"])
+        except:
+            print(Colorizer("red").colorize("Could not load config! Please specify proper types (server) or use cfg_gen.py to generate a new config file."))
+            os._exit(1)
     with open("_config_/misc.cfg", "r") as f:
-        config = configparser.ConfigParser()
-        config.read_file(f)
+        try:
+            config = configparser.ConfigParser()
+            config.read_file(f)
+        except:
+            print(Colorizer("red").colorize("Could not load config! The misc.cfg file is missing or corrupt."))
+            os._exit(1)
         global printContents
-        printContents = bool(config["Console"]["printContents"])
+        try:
+            printContents = bool(config["Console"]["printContents"])
+        except:
+            print(Colorizer("red").colorize("Could not load config! Please specify proper misc options (printContents) or use cfg_gen.py to generate a new config file."))
+            os._exit(1)
         global logtodms
-        logtodms = bool(config["DiscordLog"]["enabled"])
+        try:
+            logtodms = bool(config["DiscordLog"]["enabled"])
+        except:
+            print(Colorizer("red").colorize("Could not load config! Please specify proper misc options (logtodms) or use cfg_gen.py to generate a new config file."))
+            os._exit(1)
         global ownerid
-        ownerid = int(config["DiscordLog"]["ownerid"])
+        try:
+            ownerid = int(config["DiscordLog"]["ownerid"])
+        except:
+            print(Colorizer("red").colorize("Could not load config! Please specify proper misc options (ownerid) or use cfg_gen.py to generate a new config file."))
+            os._exit(1)
     
     
     verify_dir(log_dir)
