@@ -1,4 +1,12 @@
 # Discord: Log Literally Everything
+<!-- Badges -->
+[![Python](https://img.shields.io/badge/Python-3.8.0-yellow.svg?logo=python&logoColor=white)](https://www.python.org/downloads/release/python-380/)
+[![Py-Cord](https://img.shields.io/badge/Py--Cord-2.0.0-blue.svg?logo=discord&logoColor=white)](https://https://pycord.dev/)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
+![Any OS](https://img.shields.io/badge/OS-Any-red.svg?logo=linux&logoColor=white)
+
+
+
 
 Looking for a way to log everything that happens in your Discord server? Well, you've come to the right place! This bot will log everything that happens in your server, from messages to attachments, including DMs. Whatever happens around will be logged and saved to a directory of your choice.
 
