@@ -141,7 +141,7 @@ Hello, world!
 F:\VSCODE-PROJECTS\discord-lle\logs\DMs\fdhfdhfdh_ididididid\timetimetime_messageidmessageid_image_image.png
 ```
 
-If there was a media attachment, it will also be saved to the directory. The file will be the same MIME type / file extension as the original file. For example, if the attachment was a PNG image, the file will be saved as a PNG image. The file name will be in the following format:
+If there is a media attachment, it will also be saved to the directory. The file will be the same MIME type / file extension as the original file. For example, if the attachment is a PNG image, the file will be saved as a PNG image as well. The file name will be in the following format:
 
 ```bash
 <timestamp>_<message_id>_<type>_<filename>
