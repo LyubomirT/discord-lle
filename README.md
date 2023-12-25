@@ -8,7 +8,7 @@
 
 
 
-Looking for a way to log everything that happens in your Discord server? Well, you've come to the right place! This bot will log everything that happens in your server, from messages to attachments, including DMs. Whatever happens around will be logged and saved to a directory of your choice.
+Looking for a way to log everything that happens in your Discord server? Well, you've come to the right place! This bot will log absolutely everything, from messages to attachments, in both servers and DMs. Whatever happens around will be logged and saved to a directory of your choice.
 
 ## Installation 💾
 
