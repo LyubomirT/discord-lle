@@ -116,8 +116,10 @@ def generate_config() -> bool | None:
     
     options = config_options()
 
-    if not config_push(config_dir, log_dir, options):
-        print("Error")
+    try:
+        config_push(config_dir, log_dir, options)
+    except Exception as e:
+        print(Colorizer("red").colorize(f"Error happened. Please report this :{e}"))
         return None
     
     print(Colorizer("green").colorize("Configuration files generated successfully."))
