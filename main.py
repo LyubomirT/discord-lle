@@ -12,107 +12,125 @@ import asyncio
 from datetime import datetime
 from verify_dir import verify_dir
 
+
 load_dotenv()
 
+# Intitialize Global Vars
 token = os.getenv("BOT_TOKEN")
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
-log_dir = "_logs_"
 
-dm_config = {
-    "enabled": True,
-    "download_images": True,
-    "download_videos": True,
-    "download_audio": True,
-}
+log_dir: str = None
 
-server_config = {
-    "enabled": True,
-    "download_images": True,
-    "download_videos": True,
-    "download_audio": True,
-}
+dm_config: dict = None
+server_config: dict = None
 
-printContents = False
+printContents: bool = None
+logtodms: bool = None
+ownerid: int = None
 
-logtodms = False
-ownerid = 0
-
-def load_config():
+def load_config_dirs():
     with open("_config_/directories.cfg", "r") as f:
         try:
             config = configparser.ConfigParser()
             config.read_file(f)
-        except:
-            print(Colorizer("red").colorize("Could not load config! The directories.cfg file is missing or corrupt."))
-            os._exit(1)
-        global log_dir
-        try:
+
             log_dir = config["directories"]["log_dir"]
-        except:
+            verify_dir(log_dir)
+            return log_dir
+        except KeyError:
             print(Colorizer("red").colorize("Could not load config! Please specify a proper log directory or use cfg_gen.py to generate a new config file."))
             os._exit(1)
+        except Exception:
+            print(Colorizer("red").colorize(f"Could not load config! The directories.cfg file is missing or corrupt."))
+            os._exit(1)
+
+def load_config_types():
     with open("_config_/types.cfg", "r") as f:
         try:
+            dm_config = {}
+            server_config = {}
+
             config = configparser.ConfigParser()
             config.read_file(f)
-        except:
-            print(Colorizer("red").colorize("Could not load config! The types.cfg file is missing or corrupt."))
-            os._exit(1)
-        global dm_config
-        try:
+
+            step = 0
             dm_config["enabled"] = bool(config["direct_messages"]["enabled"])
             dm_config["download_images"] = bool(config["direct_messages"]["download_images"])
             dm_config["download_videos"] = bool(config["direct_messages"]["download_videos"])
             dm_config["download_audio"] = bool(config["direct_messages"]["download_audio"])
-        except:
-            print(Colorizer("red").colorize("Could not load config! Please specify proper types (DM) or use cfg_gen.py to generate a new config file."))
-            os._exit(1)
-        global server_config
-        try:
+
+            step = 1
             server_config["enabled"] = bool(config["servers"]["enabled"])
             server_config["download_images"] = bool(config["servers"]["download_images"])
             server_config["download_videos"] = bool(config["servers"]["download_videos"])
             server_config["download_audio"] = bool(config["servers"]["download_audio"])
-        except:
-            print(Colorizer("red").colorize("Could not load config! Please specify proper types (server) or use cfg_gen.py to generate a new config file."))
+
+            return dm_config, server_config
+
+        except KeyError:
+            errorType = ('DM', 'server')
+            print(Colorizer("red").colorize(f"Could not load config! Please specify proper types ({errorType[step]}) or use cfg_gen.py to generate a new config file."))
             os._exit(1)
+        except Exception:
+            print(Colorizer("red").colorize("Could not load config! The types.cfg file is missing or corrupt."))
+            os._exit(1)
+
+def load_config_misc():
     with open("_config_/misc.cfg", "r") as f:
         try:
             config = configparser.ConfigParser()
             config.read_file(f)
-        except:
+
+            step = 0
+            printContents = bool(config["Console"]["printContents"])
+
+            step = 1
+            logtodms = bool(config["DiscordLog"]["enabled"])
+
+            step = 2
+            ownerid = int(config["DiscordLog"]["ownerid"])
+
+            return printContents, logtodms, ownerid
+
+        except KeyError:
+            miscOptions = ('printContents', 'logtodms', 'ownerid')
+            print(Colorizer("red").colorize(f"Could not load config! Please specify proper misc options ({miscOptions[step]}) or use cfg_gen.py to generate a new config file."))
+            os._exit(1)
+        except Exception:
             print(Colorizer("red").colorize("Could not load config! The misc.cfg file is missing or corrupt."))
             os._exit(1)
-        global printContents
-        try:
-            printContents = bool(config["Console"]["printContents"])
-        except:
-            print(Colorizer("red").colorize("Could not load config! Please specify proper misc options (printContents) or use cfg_gen.py to generate a new config file."))
-            os._exit(1)
-        global logtodms
-        try:
-            logtodms = bool(config["DiscordLog"]["enabled"])
-        except:
-            print(Colorizer("red").colorize("Could not load config! Please specify proper misc options (logtodms) or use cfg_gen.py to generate a new config file."))
-            os._exit(1)
-        global ownerid
-        try:
-            ownerid = int(config["DiscordLog"]["ownerid"])
-        except:
-            print(Colorizer("red").colorize("Could not load config! Please specify proper misc options (ownerid) or use cfg_gen.py to generate a new config file."))
-            os._exit(1)
-    
-    
-    verify_dir(log_dir)
-        
 
 @bot.event
 async def on_ready():
+    global log_dir
+    global dm_config
+    global server_config
+    global printContents
+    global logtodms
+    global ownerid
+
+    # Assign globals from loading configs
+    log_dir = load_config_dirs()
+
+    config_types = load_config_types()
+    dm_config = config_types[0]
+    server_config = config_types[1]
+
+    config_misc = load_config_misc()
+    printContents = config_misc[0]
+    logtodms = config_misc[1]
+    ownerid = config_misc[2]
+
+    # Check if all privileged intents are enabled, else raise error and quit
+    if not all((bot.intents.presences, bot.intents.members, bot.intents.message_content)):
+        print(Colorizer("red").colorize("One or more privileged intents are not enabled! Privilege intents include GUILD_PRESENCES, GUILD_MEMBERS, MESSAGE_CONTENT."))
+        os._exit(1)
+
     print(Colorizer("cyan").colorize("Bot is ready! Using configuration provided in the _config_ folder."))
     print(Colorizer("yellow").colorize("Bot is running on version 1.0.0"))
     print(Colorizer("yellow").colorize("Config Preview:"))
-    load_config()
+
     print(Colorizer("yellow").colorize("Log directory: " + log_dir))
     print(Colorizer("purple").colorize("Direct Messages:"))
     print(Colorizer("purple").colorize("Enabled: " + str(dm_config["enabled"])))
@@ -139,10 +157,23 @@ async def on_ready():
 #       - <channel_name>
 #           - <timestamp>_<message_id>.txt
 
+async def send_log_to_dm(log_file_path: str, message: discord.Message):
+    file = discord.File(log_file_path)
+    user: discord.User = await bot.get_user(ownerid)
+    if isinstance(user, discord.User):
+        await user.send(file=file)
+
+        lines = [f"Log file for {message.author.name} ({message.author.id})",
+                f"Message ID: {message.id}",
+                f"Message Content: {message.content}",
+                f"Message Timestamp: {message.created_at}"
+                f"Message Author: {message.author.name} ({message.author.id})"]
+
+        await user.send("\n".join(lines))
+
 # When a DM message is received, this event will be triggered.
-    
 @bot.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     if message.author == bot.user:
         return
     
@@ -206,24 +237,8 @@ async def on_message(message):
             
             # If logtodms is enabled, send the log file to the owner
             if logtodms:
-                file = discord.File(log_file_path)
-                await bot.get_user(ownerid).send(file=file)
-                """
-                await bot.get_user(ownerid).send("Log file for " + message.author.name + " (" + str(message.author.id) + ")")
-                await bot.get_user(ownerid).send("Message ID: " + str(message.id))
-                await bot.get_user(ownerid).send("Message Content: " + message.content)
-                await bot.get_user(ownerid).send("Message Timestamp: " + str(message.created_at))
-                await bot.get_user(ownerid).send("Message Author: " + str(message.author.name) + " (" + str(message.author.id) + ")")
-                """
-                # Put all of the above into a single message
-                await bot.get_user(ownerid).send(f"""Log file for {message.author.name} ({str(message.author.id)})
-Message ID: {str(message.id)}
-Message Timestamp: {str(message.created_at)}
-Message Author: {str(message.author.name)} ({str(message.author.id)})""")
-                
+                await send_log_to_dm(log_file_path, message)
 
-
-                    
     elif isinstance(message.channel, discord.channel.TextChannel):
         if not server_config["enabled"]:
             return
@@ -289,26 +304,7 @@ Message Author: {str(message.author.name)} ({str(message.author.id)})""")
 
         # If logtodms is enabled, send the log file to the owner
         if logtodms:
-            file = discord.File(log_file_path)
-            await bot.get_user(ownerid).send(file=file)
-            """
-            await bot.get_user(ownerid).send("Log file for " + message.author.name + " (" + str(message.author.id) + ")")
-            await bot.get_user(ownerid).send("Message ID: " + str(message.id))
-            await bot.get_user(ownerid).send("Message Guild: " + str(message.guild.name) + " (" + str(message.guild.id) + ")")
-            await bot.get_user(ownerid).send("Message Timestamp: " + str(message.created_at))
-            await bot.get_user(ownerid).send("Message Channel: " + str(message.channel) + " (" + str(message.channel.id) + ")")
-            await bot.get_user(ownerid).send("Message Author: " + str(message.author.name) + " (" + str(message.author.id) + ")")
-            """
-            # Put all of the above into a single message
-            await bot.get_user(ownerid).send(f"""Log file for {message.author.name} ({str(message.author.id)})
-Message ID: {str(message.id)}
-Message Guild: {str(message.guild.name)} ({str(message.guild.id)})
-Message Timestamp: {str(message.created_at)}
-Message Channel: {str(message.channel)} ({str(message.channel.id)})
-Message Author: {str(message.author.name)} ({str(message.author.id)})""")
-
-
-
+            await send_log_to_dm(log_file_path, message)
 
 bot.remove_command("help")
 
