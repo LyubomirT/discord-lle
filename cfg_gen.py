@@ -1,87 +1,129 @@
 import os
 import shutil
-import configparser
 from colorizer import Colorizer  # Assuming Colorizer class is defined in colorizer.py
 
-def verify_dir(directory):
-    if not os.path.exists(directory):
-        try:
-            os.makedirs(directory)
-        except OSError:
-            print(Colorizer("red").colorize("Creation of the directory failed. Terminating."))
-            exit(1)
 
-def overwrite_confirmation(directory):
-    if os.path.exists(directory):
-        response = input(Colorizer("yellow").colorize(
-            f"There already seems to be a {directory} directory here. Proceeding will overwrite it COMPLETELY. "
-            f"Do you still want to continue (yes/no)? "
-        ))
-        return response.lower() == 'yes' or response.lower() == 'y'
-    return None
+def create_dir(directory: str) -> bool:
+    try:
+        os.makedirs(directory)
+    except OSError:
+        print(Colorizer("red").colorize("Creation of the directory failed. Terminating."))
+        return False
+    return True
 
-def ask(prompt):
+def overwrite_confirmation(directory: str) -> bool:
+    response = input(Colorizer("yellow").colorize(
+        f"There already seems to be a {directory} directory here. Proceeding will overwrite it COMPLETELY. "
+        f"Do you still want to continue (yes/no)? "))
+    
+    if response[0].lower() == "y":
+        return True
+    
+    print(response[0])
+    return False
+
+def config_options() -> dict:
+    options = {
+        "Enable direct messages (yes/no): " : False,
+        "Download images in direct messages (yes/no): " : False,
+        "Download videos in direct messages (yes/no): " : False,
+        "Download audio in direct messages (yes/no): " : False,
+
+        "Enable server messages (yes/no): " : False,
+        "Download images in server messages (yes/no): " : False,
+        "Download videos in server messages (yes/no): " : False,
+        "Download audio in server messages (yes/no): " : False,
+
+        "Print contents (yes/no): " : False,
+        "Enable logging to direct messages (yes/no): " : False,
+        "Enter owner ID: " : 6969,
+    }
+
+    for option in options:
+        options[option] = ask(option) if "owner" not in option else ask(option, type=int)
+            
+    return options
+
+def config_push(directory: str, log_directory: str, options: dict) -> bool:
+    config_files = ["directories.cfg", "types.cfg", "misc.cfg"]
+
+    for file in config_files:
+        with open(os.path.join(directory, file), "w") as f:
+
+            if "directories" in file:
+                f.write(f"[directories]\nlog_dir = {log_directory}\n")
+
+            if "types" in file:
+                f.write("[direct_messages]\n"
+                        f"enabled = {options['Enable direct messages (yes/no): ']}\n"
+                        f"download_images = {options['Download images in direct messages (yes/no): ']}\n"
+                        f"download_videos = {options['Download videos in direct messages (yes/no): ']}\n"
+                        f"download_audio = {options['Download audio in direct messages (yes/no): ']}\n\n"
+                        f"[servers]\n"
+                        f"enabled = {options['Enable server messages (yes/no): ']}\n"
+                        f"download_images = {options['Download images in server messages (yes/no): ']}\n"
+                        f"download_videos = {options['Download videos in server messages (yes/no): ']}\n"
+                        f"download_audio = {options['Download audio in server messages (yes/no): ']}\n")
+                
+            if "misc" in file:
+                    f.write("[Console]\nprintContents = {}\n\n"
+                        "[DiscordLog]\nenabled = {}\nownerid = {}\n".format(options['Print contents (yes/no): '],
+                                                options['Enable logging to direct messages (yes/no): '], options['Enter owner ID: ']))
+    
+    return True
+
+def ask(prompt: str, type=str) -> bool | int:
     while True:
-        response = input(prompt).lower()
+        try:
+            response = type(input(prompt).lower())
+
+        except ValueError:
+            print(Colorizer("red").colorize("Invalid input. Please try again!"))
+            continue
+
         if response in ['yes', 'no', 'y', 'n']:
             return response == 'yes' or response == 'y'
-        else:
-            print(Colorizer("red").colorize("Invalid input. Please enter 'yes', 'no', 'y', or 'n'."))
+        
+        if type is int:
+            return response
+        
+        print(Colorizer("red").colorize("Invalid input. Please enter 'yes', 'no', 'y', or 'n'."))
 
-def generate_config():
+def generate_config() -> bool | None:
     config_dir = "_config_"
-    
-    confirmation = overwrite_confirmation(config_dir)
-    if not confirmation:
-        print(Colorizer("red").colorize("Operation aborted. Configuration generation canceled."))
-        return
-    elif confirmation is True:
+
+    if os.path.exists(config_dir):
+        if not overwrite_confirmation(config_dir):
+            print(Colorizer("red").colorize("Operation aborted. Configuration generation canceled."))
+            return None
+        
         shutil.rmtree(config_dir)
-        print(Colorizer("cyan").colorize("Removed existing configuration directory."))
-    elif confirmation is None:
-        print(Colorizer("green").colorize("No existing configuration directory found. Creating one."))
-    verify_dir(config_dir)
 
-    # Directories configuration
+    if not create_dir(config_dir):
+        return None
+    
     log_dir = input("Enter the log directory: ")
-    verify_dir(log_dir)
 
-    # Types configuration
-    dm_enabled = ask("Enable direct messages (yes/no): ")
-    dm_download_images = ask("Download images in direct messages (yes/no): ")
-    dm_download_videos = ask("Download videos in direct messages (yes/no): ")
-    dm_download_audio = ask("Download audio in direct messages (yes/no): ")
+    if os.path.exists(log_dir):
+        if not overwrite_confirmation(log_dir):
+            print(Colorizer("red").colorize("Operation aborted. Configuration generation canceled."))
+            return None
+        
+        shutil.rmtree(log_dir)
 
-    server_enabled = ask("Enable server messages (yes/no): ")
-    server_download_images = ask("Download images in server messages (yes/no): ")
-    server_download_videos = ask("Download videos in server messages (yes/no): ")
-    server_download_audio = ask("Download audio in server messages (yes/no): ")
+    if not create_dir(log_dir):
+        return None
+    
+    options = config_options()
 
-    # Misc configuration
-    print_contents = ask("Print contents (yes/no): ")
-    log_to_dms = ask("Enable logging to direct messages (yes/no): ")
-    owner_id = int(input("Enter owner ID: "))
-
-    with open(os.path.join(config_dir, "directories.cfg"), "w") as f:
-        f.write(f"[directories]\nlog_dir = {log_dir}\n")
-
-    with open(os.path.join(config_dir, "types.cfg"), "w") as f:
-        f.write("[direct_messages]\n"
-                f"enabled = {dm_enabled}\n"
-                f"download_images = {dm_download_images}\n"
-                f"download_videos = {dm_download_videos}\n"
-                f"download_audio = {dm_download_audio}\n\n"
-                f"[servers]\n"
-                f"enabled = {server_enabled}\n"
-                f"download_images = {server_download_images}\n"
-                f"download_videos = {server_download_videos}\n"
-                f"download_audio = {server_download_audio}\n")
-
-    with open(os.path.join(config_dir, "misc.cfg"), "w") as f:
-        f.write("[Console]\nprintContents = {}\n\n"
-                "[DiscordLog]\nenabled = {}\nownerid = {}\n".format(print_contents, log_to_dms, owner_id))
-
+    try:
+        config_push(config_dir, log_dir, options)
+    except Exception as e:
+        print(Colorizer("red").colorize(f"Error happened. Please report this :{e}"))
+        return None
+    
     print(Colorizer("green").colorize("Configuration files generated successfully."))
+    return True
 
 if __name__ == "__main__":
     generate_config()
