@@ -6,9 +6,15 @@
 ![Any OS](https://img.shields.io/badge/OS-Any-red.svg?logo=linux&logoColor=white)
 
 
+## Overview 📖
 
+Do you want to record everything that happens on your Discord server? You've arrived at the correct location! This bot will log everything in both servers and DMs, from messages to attachments. Everything that happens around you will be recorded and saved to a directory of your choosing.
 
-Looking for a way to log everything that happens in your Discord server? Well, you've come to the right place! This bot will log absolutely everything, from messages to attachments, in both servers and DMs. Whatever happens around will be logged and saved to a directory of your choice.
+- Comprehensive logging of messages and attachments in both servers and DMs.
+- Customizable logging directory and file format.
+- Optional logging to DMs for direct monitoring.
+- Interactive configuration generator for ease of setup.
+
 
 ## Installation 💾
 
@@ -50,13 +56,13 @@ python main.py
 
 ### NOTE ⚠
 
-This bot requires Privileged Gateway Intents to be enabled. You can enable them in the Discord Developer Portal under the "Bot" tab. These are required for the bot to be able to log messages from servers and send messages to DMs.
+Privileged Gateway Intents must be enabled for this bot. You can enable them by going to the "Bot" page in the Discord Developer Portal. These are essential for the bot to log server messages and deliver messages to DMs.
 
 ![image](https://discordpy.readthedocs.io/en/latest/_images/discord_privileged_intents.png)
 
 ## Usage 📦
 
-The bot will automatically log messages (or message attachments) to the specified directory. The directory, however, must follow a specific format:
+Messages (or message attachments) will be automatically logged to the selected directory by the bot. The directory, on the other hand, must adhere to a specified format:
 
 ```
 DMs
