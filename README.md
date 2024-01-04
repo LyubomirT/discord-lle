@@ -54,7 +54,7 @@ BOT_TOKEN = TOKENFROMDISCORD
 python main.py
 ```
 
-### NOTE ⚠
+## Prerequisites 📋
 
 Privileged Gateway Intents must be enabled for this bot. You can enable them by going to the "Bot" page in the Discord Developer Portal. These are essential for the bot to log server messages and deliver messages to DMs.
 
@@ -115,7 +115,7 @@ download_audio = true
 
 ### `_config_/misc.cfg`
 
-This file contains miscellaneous configuration options. For example, you can enable or disable printing the contents of the log files to the console, or you can enable or disable logging to DMs. You can also change the owner ID, which is the ID of the user that will receive the log files if logging to DMs is enabled.
+This file contains miscellaneous configuration options. For example, you can enable or disable printing the contents of the log files to the console, or you can enable or disable logging to DMs. You can also change the owner ID, which is the ID of the user who will receive the log files if logging into DMs is enabled.
 
 Example:
 
@@ -147,7 +147,7 @@ Hello, world!
 F:\VSCODE-PROJECTS\discord-lle\logs\DMs\fdhfdhfdh_ididididid\timetimetime_messageidmessageid_image_image.png
 ```
 
-If there is a media attachment, it will also be saved to the directory. The file will be the same MIME type / file extension as the original file. For example, if the attachment is a PNG image, the file will be saved as a PNG image as well. The file name will be in the following format:
+If there is a media attachment, it will also be saved to the directory. The file will be the same MIME type/file extension as the original file. For example, if the attachment is a PNG image, the file will be saved as a PNG image as well. The file name will be in the following format:
 
 ```bash
 <timestamp>_<message_id>_<type>_<filename>
@@ -155,8 +155,7 @@ If there is a media attachment, it will also be saved to the directory. The file
 
 ## Logs in DMs 📬
 
-The bot can also send the log files to the owner of the bot. This can be useful if you want to keep track of what the bot is logging. To enable this, set `enabled` to `true` in `_config_/misc.cfg`. You can also change the owner ID in the same file.
-
+The bot can also send the log files to the owner of the bot. This can be useful if you want to keep track of what the bot is logging. To enable this, set enabled to true in `_config_/misc.cfg`. You can also change the owner ID in the same file.
 The bot will send two messages to the owner when a message is logged. The first one will be the log file itself, and the second one will be a summary of the message. The summary will contain the following information:
 
 - The name and ID of the user that sent the message
@@ -164,7 +163,8 @@ The bot will send two messages to the owner when a message is logged. The first 
 - The name and ID of the channel that the message was sent in
 - The timestamp of the message
 
-Also note that this data may differ between DMs and servers. For example, the server name and ID will not be included in the summary if the message was sent in a DM. (DMs don't have server information after all :P)
+Also, note that this data may differ between DMs and servers. For example, the server name and ID will not be included in the summary if the message was sent in a DM. (DMs don't have server information after all :P)
+
 
 ## Configuration Generator 🛠
 
@@ -207,16 +207,12 @@ Pull requests are welcome! If you want to contribute to this project, please fol
 
 ## Discord Server 📡
 
-If you have any questions, suggestions, or just want to hang out, feel free to join the official [Discord server](https://discord.gg/4nVVhh29E3) of the developer!
+If you have any questions, or suggestions, or just want to hang out, feel free to join the official [Discord server](https://dGiiscord.gg/4nVVhh29E3) of the developer!
 
 ## License 📜
 
 This project is licensed under the [BSD 3-Clause License](LICENSE). Please abide by the terms of the license when using this project. Thank you! ♥
 
-## Acknowledgements 🙏
+## Acknowledgments 🙏
 
 Special thanks to the developers of the libraries used in this project! Without their hard work, this project would not be possible.
-
-
-
-
